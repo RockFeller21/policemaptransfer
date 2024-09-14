@@ -21,7 +21,7 @@
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     var userId = tg.initDataUnsafe.user.id;
                     updateDebug('ID пользователя: ' + userId);
-                    var redirectUrl = "http://127.0.0.1:3000?tgauth=true&id=" + userId;
+                    var redirectUrl = "http://81.177.6.86:3000?tgauth=true&id=" + userId;
                     updateDebug('Перенаправление на: ' + redirectUrl);
                     window.location.href = redirectUrl;
                 } else {
