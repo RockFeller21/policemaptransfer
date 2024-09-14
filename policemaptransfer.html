@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirect</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <p id="message">Инициализация...</p>
+    <script>
+        function updateDebug(info) {
+            document.getElementById('message').innerHTML += info + '<br>';
+        }
+
+        function redirect() {
+            updateDebug('Функция redirect вызвана');
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                updateDebug('Telegram WebApp доступен');
+                var tg = window.Telegram.WebApp;
+                
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    var userId = tg.initDataUnsafe.user.id;
+                    updateDebug('ID пользователя: ' + userId);
+                    var redirectUrl = "http://127.0.0.1:3000?tgauth=true&id=" + userId;
+                    updateDebug('Перенаправление на: ' + redirectUrl);
+                    window.location.href = redirectUrl;
+                } else {
+                    updateDebug('Данные пользователя недоступны');
+                }
+            } else {
+                updateDebug('Telegram WebApp недоступен');
+            }
+        }
+
+        updateDebug('Скрипт начал выполнение');
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            updateDebug('Telegram WebApp найден, вызываем ready()');
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.onEvent('viewportChanged', redirect);
+        } else {
+            updateDebug('Telegram WebApp не найден при загрузке страницы');
+        }
+
+        // Попытка выполнить redirect через 2 секунды
+        setTimeout(redirect, 2000);
+    </script>
+</body>
+</html>
