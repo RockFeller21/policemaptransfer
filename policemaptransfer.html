@@ -1,49 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Redirect</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перенаправление</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        #message {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
-    <p id="message">Инициализация...</p>
+    <div id="message">Инициализация...</div>
+
     <script>
-        function updateDebug(info) {
-            document.getElementById('message').innerHTML += info + '<br>';
+        function updateMessage(info) {
+            document.getElementById('message').innerHTML = info;
         }
 
         function redirect() {
-            updateDebug('Функция redirect вызвана');
+            console.log('Функция redirect вызвана');
             
             if (window.Telegram && window.Telegram.WebApp) {
-                updateDebug('Telegram WebApp доступен');
-                var tg = window.Telegram.WebApp;
+                console.log('Telegram WebApp доступен');
+                const tg = window.Telegram.WebApp;
                 
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    var userId = tg.initDataUnsafe.user.id;
-                    updateDebug('ID пользователя: ' + userId);
-                    var redirectUrl = "http://81.177.6.86:3000?tgauth=true&id=" + userId;
-                    updateDebug('Перенаправление на: ' + redirectUrl);
+                    const userId = tg.initDataUnsafe.user.id;
+                    console.log('ID пользователя:', userId);
+                    const redirectUrl = `https://mypolicemap.ru/?tgauth=true&id=${userId}`;
+                    console.log('Перенаправление на:', redirectUrl);
                     window.location.href = redirectUrl;
                 } else {
-                    updateDebug('Данные пользователя недоступны');
+                    updateMessage('Ошибка: данные пользователя недоступны');
+                    console.log('Данные пользователя недоступны');
                 }
             } else {
-                updateDebug('Telegram WebApp недоступен');
+                updateMessage('Ошибка: Telegram WebApp недоступен');
+                console.log('Telegram WebApp недоступен');
             }
         }
 
-        updateDebug('Скрипт начал выполнение');
+        console.log('Скрипт начал выполнение');
 
         if (window.Telegram && window.Telegram.WebApp) {
-            updateDebug('Telegram WebApp найден, вызываем ready()');
+            console.log('Telegram WebApp найден, вызываем ready()');
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.onEvent('viewportChanged', redirect);
         } else {
-            updateDebug('Telegram WebApp не найден при загрузке страницы');
+            console.log('Telegram WebApp не найден при загрузке страницы');
         }
 
         // Попытка выполнить redirect через 2 секунды
-        setTimeout(redirect, 2000);
+        setTimeout(() => {
+            if (document.getElementById('message').innerHTML === 'Инициализация...') {
+                redirect();
+            }
+        }, 2000);
     </script>
 </body>
 </html>
