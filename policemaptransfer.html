@@ -40,8 +40,11 @@
 
             if (!token) {
                 updateMessage('Ошибка: отсутствует токен');
+                console.log('Токен отсутствует в URL');
                 return;
             }
+
+            console.log('Получен токен:', token);
 
             if (window.Telegram && window.Telegram.WebApp) {
                 console.log('Telegram WebApp доступен');
@@ -57,6 +60,7 @@
         }
 
         console.log('Скрипт начал выполнение');
+        console.log('URL:', window.location.href);
 
         if (window.Telegram && window.Telegram.WebApp) {
             console.log('Telegram WebApp найден, вызываем ready()');
