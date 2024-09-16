@@ -29,22 +29,38 @@
 
     <script>
         function updateMessage(info) {
-            document.getElementById('message').innerHTML = info;
+            document.getElementById('message').textContent = info;
         }
 
         function redirect() {
             console.log('Функция redirect вызвана');
-            
+
             if (window.Telegram && window.Telegram.WebApp) {
-                console.log('Telegram WebApp доступен');
                 const tg = window.Telegram.WebApp;
-                
+
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     const userId = tg.initDataUnsafe.user.id;
-                    console.log('ID пользователя:', userId);
-                    const redirectUrl = `https://mypolicemap.ru/?tgauth=true&id=${userId}`;
-                    console.log('Перенаправление на:', redirectUrl);
-                    window.location.href = redirectUrl;
+                    const authUrl = `https://mypolicemap.ru/get-token?user_id=${userId}`;
+                    
+                    // Запрашиваем токен от сервера
+                    fetch(authUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.token) {
+                                // Формируем URL для перенаправления с токеном
+                                const redirectUrl = `https://mypolicemap.ru/?tgauth=true&id=${userId}&token=${data.token}`;
+                                console.log('Перенаправление на:', redirectUrl);
+                                window.location.href = redirectUrl;
+                            } else {
+                                updateMessage('Ошибка: не удалось получить токен.');
+                                console.error('Не удалось получить токен:', data);
+                            }
+                        })
+                        .catch(error => {
+                            updateMessage('Ошибка: проблема с запросом токена.');
+                            console.error('Ошибка при запросе токена:', error);
+                        });
+
                 } else {
                     updateMessage('Ошибка: данные пользователя недоступны');
                     console.log('Данные пользователя недоступны');
@@ -67,7 +83,7 @@
 
         // Попытка выполнить redirect через 2 секунды
         setTimeout(() => {
-            if (document.getElementById('message').innerHTML === 'Инициализация...') {
+            if (document.getElementById('message').textContent === 'Инициализация...') {
                 redirect();
             }
         }, 2000);
