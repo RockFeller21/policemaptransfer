@@ -35,24 +35,20 @@
         function redirect() {
             console.log('Функция redirect вызвана');
             
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
-            if (!token) {
-                updateMessage('Ошибка: отсутствует токен');
-                console.log('Токен отсутствует в URL');
-                return;
-            }
-
-            console.log('Получен токен:', token);
-
             if (window.Telegram && window.Telegram.WebApp) {
                 console.log('Telegram WebApp доступен');
                 const tg = window.Telegram.WebApp;
                 
-                const redirectUrl = `https://mypolicemap.ru/?token=${token}`;
-                console.log('Перенаправление на:', redirectUrl);
-                window.location.href = redirectUrl;
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const userId = tg.initDataUnsafe.user.id;
+                    console.log('ID пользователя:', userId);
+                    const redirectUrl = `https://mypolicemap.ru/?tgauth=true&id=${userId}`;
+                    console.log('Перенаправление на:', redirectUrl);
+                    window.location.href = redirectUrl;
+                } else {
+                    updateMessage('Ошибка: данные пользователя недоступны');
+                    console.log('Данные пользователя недоступны');
+                }
             } else {
                 updateMessage('Ошибка: Telegram WebApp недоступен');
                 console.log('Telegram WebApp недоступен');
@@ -60,7 +56,6 @@
         }
 
         console.log('Скрипт начал выполнение');
-        console.log('URL:', window.location.href);
 
         if (window.Telegram && window.Telegram.WebApp) {
             console.log('Telegram WebApp найден, вызываем ready()');
